@@ -1,0 +1,283 @@
+## VELVIA ROUND 2
+
+use_bpm 125
+
+live_loop :met1 do
+  sleep 1
+end
+
+cmaster1 = 120
+cmaster2 = 100
+cmaster3 = 100
+
+live_loop :kick, sync: :met1 do
+  ##| stop
+  a = 7
+  20.times do
+    4.times do
+      kick = "/Users/sarah/Desktop/dj_dave/samples/Velvia/kick_02.wav"
+      sample kick, amp: a, cutoff: cmaster1
+      sleep 1
+    end
+  end
+  sleep 100
+end
+
+live_loop :hhc, sync: :met1 do
+  stop
+  r = 1
+  a = 0.5
+  p = -0.3
+  shake = "/Users/sarah/Desktop/dj_dave/samples/Velvia/hhc.wav"
+  8.times do
+    sample shake, rate: r, amp: a, cutoff: cmaster2, pan: p
+    sleep 0.25
+  end
+  sample shake, rate: 0.75, amp: a, cutoff: cmaster2, pan: p
+  sleep 0.5
+  6.times do
+    sample shake, rate: r, amp: a, cutoff: cmaster2, pan: p
+    sleep 0.25
+  end
+end
+
+live_loop :clap, sync: :met1 do
+  stop
+  clap = "/Users/sarah/Desktop/dj_dave/samples/Velvia/clap.wav"
+  sleep 1
+  sample clap, amp: 1.2, cutoff: cmaster1
+  sleep 1
+end
+
+with_fx :reverb do
+  live_loop :woodblock, sync: :met1 do
+    stop
+    a = 0.4
+    r = 1.8
+    p = -0.4
+    click = "/Users/sarah/Desktop/dj_dave/samples/Velvia/click.wav"
+    sleep 0.5
+    2.times do
+      sample click, amp: a, rate: r, cutoff: cmaster3, pan: p
+      sleep 0.75
+    end
+    3.times do
+      sample click, amp: a, rate: r, cutoff: cmaster3, pan: p
+      sleep 0.5
+    end
+    sleep 4.5
+  end
+end
+
+with_fx :reverb, mix: 0.25 do
+  live_loop :hhc2, sync: :met1 do
+    stop
+    a = 0.5
+    hhc = "/Users/sarah/Desktop/dj_dave/samples/Velvia/hhc.wav"
+    16.times do
+      sample hhc, amp: a, finish: 0.25, cutoff: cmaster2, pan: -0.2, rate: 1.5
+      sleep 0.25
+    end
+  end
+end
+
+live_loop :hho, sync: :met1 do
+  stop
+  hho = "/Users/sarah/Desktop/dj_dave/samples/Velvia/hho_02.wav"
+  sleep 0.5
+  sample hho, cutoff: cmaster3, pan: -0.2, amp: 0.7
+  sleep 0.5
+end
+
+with_fx :reverb, mix: 0.6 do
+  live_loop :ding, sync: :met1 do
+    stop
+    dong = "/Users/sarah/Desktop/dj_dave/samples/Velvia/dong.wav"
+    sleep 0.5
+    sample dong, amp: 0.4, pan: 0.5, cutoff: cmaster3
+    sleep 3.5
+  end
+end
+
+live_loop :bonk, sync: :met1 do
+  stop
+  a = 0.5
+  p = 0
+  bonk = "/Users/sarah/Desktop/dj_dave/samples/Velvia/bonk.wav"
+  sleep 0.25
+  sample bonk, cutoff: cmaster3, amp: a, pan: p
+  sleep 3.5
+  sample bonk, cutoff: cmaster3, amp: a, pan: p
+  sleep 0.25
+end
+
+with_fx :slicer, mix: 0.75 do
+  with_fx :flanger, mix: 1 do
+    with_fx :echo do
+      live_loop :rand_vox, sync: :met1 do
+        stop
+        a = 0.7
+        c = 102
+        v1 = "/Users/sarah/Desktop/dj_dave/samples/Velvia/1.wav"
+        v2 = "/Users/sarah/Desktop/dj_dave/samples/Velvia/2.wav"
+        v3 = "/Users/sarah/Desktop/dj_dave/samples/Velvia/3.wav"
+        v4 = "/Users/sarah/Desktop/dj_dave/samples/Velvia/4.wav"
+        v5 = "/Users/sarah/Desktop/dj_dave/samples/Velvia/5.wav"
+        v6 = "/Users/sarah/Desktop/dj_dave/samples/Velvia/6.wav"
+        ##| notes = [v1, v2, v3, v4, v5, v6].choose
+        notes = (ring v1, v2, v3, v4, v5)#.shuffle
+        tick
+        sample notes.look, finish: 0.4, amp: a, cutoff: c, rate: 1, pan: 0.15
+        sleep 0.75
+      end
+    end
+  end
+end
+
+with_fx :reverb, mix: 0.6 do
+  with_fx :flanger do
+    live_loop :square, sync: :met1 do
+      stop
+      a = 0.5
+      c = 80
+      r = 0.25
+      p = line(-0.85, 0.85, steps: 32).mirror.tick
+      use_synth :square
+      tick
+      notes = (ring :b4, :e5, :d5)#.shuffle
+      play notes.look, amp: a, cutoff: c, pan: p, release: r
+      sleep 0.25
+    end
+  end
+end
+
+with_fx :reverb, mix: 0.6 do
+  live_loop :arp, sync: :met1 do
+    stop
+    a = line(0.5, 1, steps: 128).mirror.look
+    r = line(0.25, 0.5, steps: 128).mirror.look
+    use_synth :saw
+    notes = (ring :e3, :g3, :b3, :d4, :e4, :g4, :b4, :d5)#.shuffle
+    tick
+    play notes.look, amp: a, cutoff: 70, release: r, pan: 0.25
+    sleep 0.25
+  end
+end
+
+##| delay: 16
+with_fx :eq, high_q: 1, low_q: 1, low_shelf_slope: 1 do
+  live_loop :synth_bass_01, sync: :met1 do
+    stop
+    a = 1
+    c = 120
+    r = 0.3
+    use_synth :fm
+    ##| 6.times do
+    32.times do
+      play :e2, cutoff: c, amp: a, release: r
+      play :e3, cutoff: c, amp: a, release: r
+      sleep 0.25
+    end
+    28.times do
+      play :g2, cutoff: c, amp: a, release: r
+      play :g3, cutoff: c, amp: a, release: r
+      sleep 0.25
+    end
+    play :a2, cutoff: c, amp: a, release: r
+    play :a3, cutoff: c, amp: a, release: r
+    sleep 0.25
+    play :b2, cutoff: c, amp: a, release: r
+    play :b3, cutoff: c, amp: a, release: r
+    sleep 0.25
+    play :a2, cutoff: c, amp: a, release: r
+    play :a3, cutoff: c, amp: a, release: r
+    sleep 0.25
+    play :g2, cutoff: c, amp: a, release: r
+    play :g3, cutoff: c, amp: a, release: r
+    sleep 0.25
+    ##| end
+    ##| sleep 64
+  end
+end
+
+##| , delay: 144
+live_loop :synth_bass_02, sync: :met1 do
+  stop
+  a = 1
+  c = 120
+  r = 0.4
+  use_synth :fm
+  ##| 4.times do
+  32.times do
+    play :e2, cutoff: c, amp: a, release: r
+    play :e3, cutoff: c, amp: a, release: r
+    sleep 0.25
+  end
+  32.times do
+    play :g2, cutoff: c, amp: a, release: r
+    play :g3, cutoff: c, amp: a, release: r
+    sleep 0.25
+  end
+  28.times do
+    play :a2, cutoff: c, amp: a, release: r
+    play :a3, cutoff: c, amp: a, release: r
+    sleep 0.25
+  end
+  2.times do
+    play :b2, cutoff: c, amp: a, release: r
+    play :b3, cutoff: c, amp: a, release: r
+    sleep 0.25
+  end
+  2.times do
+    play :a2, cutoff: c, amp: a, release: r
+    play :a3, cutoff: c, amp: a, release: r
+    sleep 0.25
+  end
+  32.times do
+    play :e2, cutoff: c, amp: a, release: r
+    play :e3, cutoff: c, amp: a, release: r
+    sleep 0.25
+  end
+  ##| end
+  ##| sleep 64
+end
+
+##############################################################################################################
+
+with_fx :flanger, mix: 1 do
+  live_loop :idk, sync: :met1 do
+    ##| with_fx :echo do
+    stop
+    c = 100
+    idk = "/Users/sarah/Desktop/dj_dave/samples/Velvia/idk.wav"
+    sample idk, amp: 0.45, cutoff: c, start: 0.005
+    sleep 8
+    ##| end
+  end
+end
+
+
+
+##############################################################################################################
+
+with_fx :reverb do
+  with_fx :bitcrusher do
+    live_loop :shake, sync: :met1 do
+      stop
+      r = 2
+      a = 0.1
+      p = -0.3
+      shake = "/Users/sarah/Desktop/dj_dave/samples/Velvia/rimshot.wav"
+      8.times do
+        sample shake, rate: r, amp: a, cutoff: cmaster2, pan: p
+        sleep 0.25
+      end
+      sample shake, rate: 1.5, amp: a, cutoff: cmaster2, pan: p
+      sleep 0.5
+      6.times do
+        sample shake, rate: r, amp: a, cutoff: cmaster2, pan: p
+        sleep 0.25
+      end
+    end
+  end
+end
